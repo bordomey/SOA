@@ -1,0 +1,39 @@
+Task 2: Implement Movie Management and Oscar Services API
+
+Based on the OpenAPI specification in openapi-specification.yaml, create a web application that implements the following services:
+
+1. Movie Management Service - RESTful API for managing a collection of Movie objects:
+   - GET /movies - Get all movies with filtering, sorting, and pagination
+   - POST /movies - Create a new movie
+   - GET /movies/{id} - Get movie by ID
+   - PUT /movies/{id} - Update movie by ID
+   - DELETE /movies/{id} - Delete movie by ID
+   - GET /movies/average-length - Calculate average movie length
+   - GET /movies/count-by-operator - Count movies with operator greater than specified
+   - GET /movies/filter-by-operator - Get movies with operator greater than specified
+
+2. Oscar Service - Additional operations related to screenwriters and movie awards:
+   - GET /oscar/screenwriters/get-loosers - Get screenwriters with no Oscar wins
+   - PATCH /oscar/movies/honor-by-length/{min-length}/oscars-to-add - Add Oscars to movies by length
+
+Technical Requirements:
+- All request/response bodies must use XML format
+- All parameters must be passed via URL (path/query parameters)
+- Implement proper validation and error handling with appropriate HTTP status codes
+- Support filtering by any field combination in GET /movies
+- Support sorting by any field in GET /movies
+- Implement pagination with page size and page number in GET /movies
+- All auto-generated fields (id, creationDate) should be handled automatically by the server
+- XML is the required data format for all operations
+
+Data Models:
+- Movie: id, name, coordinates, creationDate, oscarsCount, goldenPalmCount, length, genre, operator
+- Coordinates: x, y
+- Person: name, birthday, height
+- MovieGenre enum: WESTERN, MUSICAL, ADVENTURE, HORROR, SCIENCE_FICTION
+
+Implementation Notes:
+- Use a suitable web framework for your preferred language
+- Store data in memory (no persistence required)
+- Follow RESTful API design principles
+- Ensure all validation constraints from the specification are implemented
