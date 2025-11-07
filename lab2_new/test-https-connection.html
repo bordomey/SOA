@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test HTTPS Connections</title>
+</head>
+<body>
+    <h1>Test HTTPS Connections to Services</h1>
+    
+    <h2>Movie Service</h2>
+    <button onclick="testMovieService()">Test Movie Service (https://localhost:9192)</button>
+    <div id="movieResult"></div>
+    
+    <h2>Oscar Service</h2>
+    <button onclick="testOscarService()">Test Oscar Service (https://localhost:9292)</button>
+    <div id="oscarResult"></div>
+    
+    <script>
+        function testMovieService() {
+            fetch('https://localhost:9192/api/movies')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('movieResult').innerHTML = '<p style="color: green;">Success! Connected to Movie Service.</p>';
+                    } else {
+                        document.getElementById('movieResult').innerHTML = '<p style="color: red;">Error: ' + response.status + ' ' + response.statusText + '</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('movieResult').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+                    console.error('Movie Service Error:', error);
+                });
+        }
+        
+        function testOscarService() {
+            fetch('https://localhost:9292/api/oscar/screenwriters/get-loosers')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('oscarResult').innerHTML = '<p style="color: green;">Success! Connected to Oscar Service.</p>';
+                    } else {
+                        document.getElementById('oscarResult').innerHTML = '<p style="color: red;">Error: ' + response.status + ' ' + response.statusText + '</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('oscarResult').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+                    console.error('Oscar Service Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>

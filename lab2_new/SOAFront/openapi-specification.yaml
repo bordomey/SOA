@@ -1,0 +1,660 @@
+openapi: 3.0.3
+info:
+  title: Movie Management and Oscar Services API
+  description: |
+    This API specification describes two web services:
+    1. Movie Management Service - RESTful API for managing a collection of Movie objects
+    2. Oscar Service - Additional operations for screenwriters and movie awards
+    
+    The API supports XML data format and follows RESTful principles.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+
+
+paths:
+  # Movie Management Service - Basic CRUD Operations
+  /movies:
+    get:
+      tags:
+        - Movie Management
+      summary: Get all movies with filtering, sorting, and pagination
+      description: |
+        Retrieve a collection of movies with support for:
+        - Filtering by any field combination
+        - Sorting by any field
+        - Pagination with page size and page number
+      parameters:
+        - name: page
+          in: query
+          description: Page number (starting from 0)
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: sort
+          in: query
+          description: Sort criteria in format field,direction (e.g., name,asc or length,desc)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: name
+          in: query
+          description: Filter by movie name
+          required: false
+          schema:
+            type: string
+        - name: oscarsCount
+          in: query
+          description: Filter by exact number of Oscars
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: goldenPalmCount
+          in: query
+          description: Filter by exact number of Golden Palm awards
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: length
+          in: query
+          description: Filter by movie length
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: genre
+          in: query
+          description: Filter by movie genre
+          required: false
+          schema:
+            $ref: '#/components/schemas/MovieGenre'
+        - name: operator.name
+          in: query
+          description: Filter by operator name
+          required: false
+          schema:
+            type: string
+        - name: coordinates.x
+          in: query
+          description: Filter by X coordinate
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: coordinates.y
+          in: query
+          description: Filter by Y coordinate
+          required: false
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: Successfully retrieved movies
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MovieListResponse'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Movie Management
+      summary: Create a new movie
+      description: Add a new movie to the collection. ID and creation date will be generated automatically.
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MovieRequest'
+      responses:
+        '201':
+          description: Movie created successfully
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '400':
+          description: Invalid input data or constraint violations
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /movies/{id}:
+    get:
+      tags:
+        - Movie Management
+      summary: Get movie by ID
+      description: Retrieve a specific movie by its unique identifier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique movie identifier
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Movie found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          description: Movie not found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Invalid ID format
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Movie Management
+      summary: Update movie by ID
+      description: Update an existing movie. ID and creation date cannot be modified.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique movie identifier
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MovieRequest'
+      responses:
+        '200':
+          description: Movie updated successfully
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          description: Movie not found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Invalid input data or constraint violations
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Movie Management
+      summary: Delete movie by ID
+      description: Remove a movie from the collection
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique movie identifier
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '204':
+          description: Movie deleted successfully
+        '404':
+          description: Movie not found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Invalid ID format
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Additional Movie Operations
+  /movies/average-length:
+    get:
+      tags:
+        - Movie Statistics
+      summary: Calculate average movie length
+      description: Calculate and return the average length of all movies in the collection
+      responses:
+        '200':
+          description: Average length calculated successfully
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AverageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /movies/count-by-operator:
+    get:
+      tags:
+        - Movie Statistics
+      summary: Count movies with operator greater than specified
+      description: Return the count of movies where the operator is greater than the specified operator
+      parameters:
+        - name: operator-name
+          in: query
+          required: true
+          description: Operator name to compare against
+          schema:
+            type: string
+        - name: operator-birthday
+          in: query
+          required: false
+          description: Operator birthday
+          schema:
+            type: string
+            format: date
+        - name: operator-height
+          in: query
+          required: false
+          description: Operator height to compare against
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Count calculated successfully
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        '400':
+          description: Invalid operator parameters
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /movies/filter-by-operator:
+    get:
+      tags:
+        - Movie Statistics
+      summary: Get movies with operator greater than specified
+      description: Return all movies where the operator is greater than the specified operator
+      parameters:
+        - name: operator-name
+          in: query
+          required: true
+          description: Operator name to compare against
+          schema:
+            type: string
+        - name: operator-birthday
+          in: query
+          required: false
+          description: Operator birthday
+          schema:
+            type: string
+            format: date
+        - name: operator-height
+          in: query
+          required: false
+          description: Operator height to compare against
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Movies filtered successfully
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MovieListResponse'
+        '400':
+          description: Invalid operator parameters
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Oscar Service Operations
+  /oscar/screenwriters/get-loosers:
+    get:
+      tags:
+        - Oscar Service
+      summary: Get screenwriters with no Oscar wins
+      description: Retrieve a list of screenwriters whose movies have never won any Oscar awards
+      responses:
+        '200':
+          description: Screenwriters list retrieved successfully
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ScreenwritersResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /oscar/movies/honor-by-length/{min-length}/oscars-to-add:
+    patch:
+      tags:
+        - Oscar Service
+      summary: Add Oscars to movies by length
+      description: Add specified number of Oscar awards to all movies with length greater than the minimum specified
+      parameters:
+        - name: min-length
+          in: path
+          required: true
+          description: Minimum movie length threshold
+          schema:
+            type: integer
+            minimum: 1
+        - name: oscars-to-add
+          in: query
+          required: true
+          description: Number of Oscar awards to add to each qualifying movie
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Oscars added successfully
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OscarUpdateResponse'
+        '400':
+          description: Invalid parameters
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Movie:
+      type: object
+      required:
+        - id
+        - name
+        - coordinates
+        - creationDate
+        - oscarsCount
+        - goldenPalmCount
+        - length
+        - operator
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Unique identifier, auto-generated
+          example: 1
+        name:
+          type: string
+          minLength: 1
+          description: Movie name, cannot be null or empty
+          example: "The Godfather"
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        creationDate:
+          type: string
+          format: date-time
+          description: Creation timestamp, auto-generated
+          example: "2023-10-15T14:30:00Z"
+        oscarsCount:
+          type: integer
+          minimum: 1
+          description: Number of Oscar awards, must be greater than 0
+          example: 3
+        goldenPalmCount:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Number of Golden Palm awards, must be greater than 0
+          example: 1
+        length:
+          type: integer
+          minimum: 1
+          description: Movie length in minutes, must be greater than 0
+          example: 175
+        genre:
+          $ref: '#/components/schemas/MovieGenre'
+        operator:
+          $ref: '#/components/schemas/Person'
+
+    MovieRequest:
+      type: object
+      required:
+        - name
+        - coordinates
+        - oscarsCount
+        - goldenPalmCount
+        - length
+        - operator
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Movie name, cannot be null or empty
+          example: "The Godfather"
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        oscarsCount:
+          type: integer
+          minimum: 1
+          description: Number of Oscar awards, must be greater than 0
+          example: 3
+        goldenPalmCount:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Number of Golden Palm awards, must be greater than 0
+          example: 1
+        length:
+          type: integer
+          minimum: 1
+          description: Movie length in minutes, must be greater than 0
+          example: 175
+        genre:
+          $ref: '#/components/schemas/MovieGenre'
+        operator:
+          $ref: '#/components/schemas/Person'
+
+    Coordinates:
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          type: number
+          format: float
+          description: X coordinate, cannot be null
+          example: 10.5
+        y:
+          type: number
+          format: double
+          minimum: -25.999999
+          description: Y coordinate, must be greater than -26
+          example: 25.7
+
+    Person:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Person name, cannot be null or empty
+          example: "Francis Ford Coppola"
+        birthday:
+          type: string
+          format: date
+          description: Birthday date, can be null
+          example: "1939-04-07"
+        height:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Height in centimeters, can be null, must be greater than 0
+          example: 180
+
+    MovieGenre:
+      type: string
+      enum:
+        - WESTERN
+        - MUSICAL
+        - ADVENTURE
+        - HORROR
+        - SCIENCE_FICTION
+      description: Movie genre enumeration
+      example: "ADVENTURE"
+
+    MovieListResponse:
+      type: object
+      properties:
+        movies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Movie'
+        totalElements:
+          type: integer
+          format: int64
+          description: Total number of movies matching the criteria
+        totalPages:
+          type: integer
+          description: Total number of pages
+        currentPage:
+          type: integer
+          description: Current page number
+        pageSize:
+          type: integer
+          description: Number of items per page
+
+    AverageResponse:
+      type: object
+      properties:
+        averageLength:
+          type: number
+          format: double
+          description: Average length of all movies
+          example: 142.5
+
+    CountResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+          description: Number of movies matching the criteria
+          example: 15
+
+    ScreenwritersResponse:
+      type: object
+      properties:
+        screenwriters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Person'
+          description: List of screenwriters with no Oscar wins
+
+    OscarUpdateResponse:
+      type: object
+      properties:
+        updatedMoviesCount:
+          type: integer
+          description: Number of movies that received additional Oscars
+          example: 8
+        message:
+          type: string
+          description: Success message
+          example: "Successfully added Oscars to qualifying movies"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Validation failed"
+        message:
+          type: string
+          description: Detailed error description
+          example: "Field 'name' cannot be null or empty"
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+          example: "2023-10-15T14:30:00Z"
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+
+tags:
+  - name: Movie Management
+    description: Basic CRUD operations for movie collection management
+  - name: Movie Statistics
+    description: Statistical operations and advanced filtering for movies
+  - name: Oscar Service
+    description: Additional operations related to Oscar awards and screenwriters

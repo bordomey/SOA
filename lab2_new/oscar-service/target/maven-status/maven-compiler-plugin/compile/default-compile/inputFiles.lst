@@ -1,0 +1,15 @@
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\ErrorResponse.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\rest\ApplicationConfig.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\MovieListResponse.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\Coordinates.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\MovieGenre.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\ScreenwritersResponse.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\DateAdapter.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\Person.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\rest\CorsRequestFilter.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\OscarUpdateResponse.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\resource\OscarResource.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\Movie.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\model\ZonedDateTimeAdapter.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\rest\CorsFilter.java
+C:\study\SOA\lab2_new\oscar-service\src\main\java\com\lab2\oscar\service\MovieServiceClient.java
