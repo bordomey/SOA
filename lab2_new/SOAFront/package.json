@@ -1,6 +1,7 @@
 {
   "name": "movie-management-frontend",
   "version": "1.0.0",
+  "homepage": "/~s336191",
   "description": "Frontend application for Movie Management and Oscar Services API",
   "private": true,
   "dependencies": {

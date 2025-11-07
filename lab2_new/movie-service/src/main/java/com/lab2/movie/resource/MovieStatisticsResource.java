@@ -129,8 +129,9 @@ public class MovieStatisticsResource {
 
     private boolean isOperatorGreaterThan(Person movieOperator, Person compareOperator) {
         // Compare by name first
-        if (movieOperator.getName().equals(compareOperator.getName())) {
-            return true;
+        int nameComparison = movieOperator.getName().compareTo(compareOperator.getName());
+        if (nameComparison != 0) {
+            return nameComparison < 0;
         }
 
         // If names are equal, compare by birthday
