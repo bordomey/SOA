@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE payara-ejb-jar PUBLIC "-//Payara//DTD Payara EJB Configuration 1.0//EN" 
+         "https://raw.githubusercontent.com/payara/Payara-Enterprise-Documentation/master/docs/modules/ROOT/pages/schemas/payara-ejb-jar_1_0.dtd">
+<payara-ejb-jar>
+    <enterprise-beans>
+        <ejb>
+            <ejb-name>OscarServiceBean</ejb-name>
+            <bean-pool>
+                <steady-pool-size>5</steady-pool-size>
+                <resize-quantity>5</resize-quantity>
+                <max-pool-size>30</max-pool-size>
+                <pool-idle-timeout-in-seconds>300</pool-idle-timeout-in-seconds>
+                <dynamic-pool-scaling-enabled>true</dynamic-pool-scaling-enabled>
+            </bean-pool>
+        </ejb>
+    </enterprise-beans>
+</payara-ejb-jar>

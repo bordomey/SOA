@@ -2,9 +2,10 @@ package com.lab2.movie.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.ZonedDateTime;
 
-@XmlRootElement(name = "MovieRequest")
+@XmlRootElement(name = "Movie")
 public class Movie {
     private long id;
     private String name;
@@ -17,19 +18,6 @@ public class Movie {
     private Person operator;
 
     public Movie() {}
-
-    public Movie(long id, String name, Coordinates coordinates, ZonedDateTime creationDate,
-                 Integer oscarsCount, Long goldenPalmCount, int length, MovieGenre genre, Person operator) {
-        this.id = id;
-        this.name = name;
-        this.coordinates = coordinates;
-        this.creationDate = creationDate;
-        this.oscarsCount = oscarsCount;
-        this.goldenPalmCount = goldenPalmCount;
-        this.length = length;
-        this.genre = genre;
-        this.operator = operator;
-    }
 
     @XmlElement
     public long getId() {
@@ -59,6 +47,7 @@ public class Movie {
     }
 
     @XmlElement
+    @XmlJavaTypeAdapter(DateAdapter.class)
     public ZonedDateTime getCreationDate() {
         return creationDate;
     }

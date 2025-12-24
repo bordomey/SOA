@@ -28,6 +28,10 @@ const apiClient = axios.create({
     'Content-Type': 'application/xml',
     'Accept': 'application/xml',
   },
+  paramsSerializer: {
+    // Encode arrays like ?sort=field,asc&sort=length,desc to match the API spec
+    indexes: null,
+  },
   transformRequest: [(data) => {
     if (data && typeof data === 'object') {
       return builder.build(data);

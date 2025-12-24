@@ -1,5 +1,6 @@
 package com.lab2.oscar.service;
 
+import com.lab2.oscar.config.ServiceConfig;
 import com.lab2.oscar.model.Movie;
 import com.lab2.oscar.model.MovieListResponse;
 
@@ -20,11 +21,13 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public class MovieServiceClient {
-    private static final String MOVIE_SERVICE_BASE_URL = "https://localhost:9192/movie-service/api";
     private static final Logger logger = Logger.getLogger(MovieServiceClient.class.getName());
     private Client client;
+    private final String MOVIE_SERVICE_BASE_URL;
 
     public MovieServiceClient() {
+        // Load the base URL from configuration
+        MOVIE_SERVICE_BASE_URL = ServiceConfig.getInstance().getMovieServiceBaseUrl();
         logger.info("Initializing MovieServiceClient");
         try {
             // Create a trust manager that does not validate certificate chains

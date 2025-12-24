@@ -2,17 +2,18 @@ package com.lab2.movie.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Date;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.ZonedDateTime;
 
 @XmlRootElement(name = "person")
 public class Person {
     private String name;
-    private Date birthday;
+    private ZonedDateTime birthday;
     private Long height;
 
     public Person() {}
 
-    public Person(String name, Date birthday, Long height) {
+    public Person(String name, ZonedDateTime birthday, Long height) {
         this.name = name;
         this.birthday = birthday;
         this.height = height;
@@ -28,11 +29,12 @@ public class Person {
     }
 
     @XmlElement
-    public Date getBirthday() {
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    public ZonedDateTime getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(ZonedDateTime birthday) {
         this.birthday = birthday;
     }
 

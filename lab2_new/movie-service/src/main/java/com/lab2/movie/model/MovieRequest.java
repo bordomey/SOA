@@ -77,4 +77,21 @@ public class MovieRequest {
     public void setOperator(Person operator) {
         this.operator = operator;
     }
+
+    /**
+     * Converts this MovieRequest to a Movie object
+     * @return Movie object with the same properties
+     */
+    public Movie toMovie() {
+        Movie movie = new Movie();
+        movie.setName(this.name);
+        movie.setCoordinates(this.coordinates);
+        movie.setOscarsCount(this.oscarsCount);
+        movie.setGoldenPalmCount(this.goldenPalmCount);
+        movie.setLength(this.length);
+        movie.setGenre(this.genre);
+        movie.setOperator(this.operator);
+        // Note: ID and creationDate will be set by the DAO when creating the movie
+        return movie;
+    }
 }

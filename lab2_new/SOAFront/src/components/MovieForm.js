@@ -155,7 +155,7 @@ const MovieForm = () => {
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Coordinate Y * (must be > -26)</label>
+            <label className="form-label">Coordinate Y * (must be &gt; -26)</label>
             <input
               type="number"
               step="any"
@@ -171,26 +171,26 @@ const MovieForm = () => {
 
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Oscars Count * (min: 1)</label>
+            <label className="form-label">Oscars Count * (min: 0)</label>
             <input
               type="number"
               className="form-input"
               value={formData.oscarsCount}
               onChange={(e) => handleChange('oscarsCount', e.target.value)}
               required
-              min="1"
+              min="0"
               placeholder="Number of Oscars"
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Golden Palm Count * (min: 1)</label>
+            <label className="form-label">Golden Palm Count * (min: 0)</label>
             <input
               type="number"
               className="form-input"
               value={formData.goldenPalmCount}
               onChange={(e) => handleChange('goldenPalmCount', e.target.value)}
               required
-              min="1"
+              min="0"
               placeholder="Number of Golden Palms"
             />
           </div>
@@ -198,14 +198,14 @@ const MovieForm = () => {
 
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Length (minutes) * (min: 1)</label>
+            <label className="form-label">Length (minutes) * (min: 0)</label>
             <input
               type="number"
               className="form-input"
               value={formData.length}
               onChange={(e) => handleChange('length', e.target.value)}
               required
-              min="1"
+              min="0"
               placeholder="Movie length in minutes"
             />
           </div>
