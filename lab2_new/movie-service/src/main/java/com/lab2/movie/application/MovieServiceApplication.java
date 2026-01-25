@@ -1,15 +1,25 @@
 package com.lab2.movie.application;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.annotation.ComponentScan;
+import javax.xml.ws.Endpoint;
+import com.lab2.movie.soap.MovieServiceImpl;
 
-@SpringBootApplication
-@ComponentScan(basePackages = "com.lab2.movie")
-@EnableDiscoveryClient
 public class MovieServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MovieServiceApplication.class, args);
+        String url = "http://0.0.0.0:8080/MovieService";
+        if (args.length > 0) {
+            url = args[0];
+        }
+        
+        Endpoint.publish(url, new MovieServiceImpl());
+        System.out.println("Movie SOAP Service is running at: " + url);
+        
+        // Keep the application running
+        synchronized (MovieServiceApplication.class) {
+            try {
+                MovieServiceApplication.class.wait();
+            } catch (InterruptedException e) {
+                System.out.println("Service interrupted");
+            }
+        }
     }
 }

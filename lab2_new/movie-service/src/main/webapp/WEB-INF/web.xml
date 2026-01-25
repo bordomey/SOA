@@ -4,22 +4,17 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-         
+    
     <display-name>Movie Service</display-name>
     
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
+    <servlet>
+        <servlet-name>MovieServiceImpl</servlet-name>
+        <servlet-class>com.lab2.movie.soap.MovieServiceImpl</servlet-class>
+    </servlet>
     
-    <!-- Enable HTTPS only -->
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>Entire Application</web-resource-name>
-            <url-pattern>/*</url-pattern>
-        </web-resource-collection>
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
-    </security-constraint>
+    <servlet-mapping>
+        <servlet-name>MovieServiceImpl</servlet-name>
+        <url-pattern>/MovieService</url-pattern>
+    </servlet-mapping>
     
 </web-app>
