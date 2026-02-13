@@ -27,7 +27,7 @@ public class ServiceConfig {
             if (input == null) {
                 logger.warning("Unable to find application.properties file, using default values");
                 // Set default values
-                properties.setProperty("movie.service.base.url", "https://haproxy:8080/movie-service/api");
+                properties.setProperty("movie.service.base.url", "http://host.docker.internal:8081/movie-service/api");
             } else {
                 properties.load(input);
                 logger.info("Loaded application.properties successfully");
@@ -35,11 +35,11 @@ public class ServiceConfig {
         } catch (IOException ex) {
             logger.severe("Error loading application.properties: " + ex.getMessage());
             // Set default values as fallback
-            properties.setProperty("movie.service.base.url", "https://haproxy:8080/movie-service/api");
+            properties.setProperty("movie.service.base.url", "http://host.docker.internal:8081/movie-service/api");
         }
     }
 
     public String getMovieServiceBaseUrl() {
-        return properties.getProperty("movie.service.base.url", "https://haproxy:8080/movie-service/api");
+        return properties.getProperty("movie.service.base.url", "http://host.docker.internal:8081/movie-service/api");
     }
 }

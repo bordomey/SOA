@@ -1,0 +1,7 @@
+FROM vromero/mule
+
+# Copy our application files directly to apps directory
+COPY mule-config/mule-config.xml /opt/mule/apps/simple-mule-app/mule-config.xml
+
+# Set proper permissions
+RUN chmod -R 755 /opt/mule/apps/

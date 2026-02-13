@@ -19,8 +19,8 @@ const builder = new XMLBuilder({
   indentBy: "  ",
 });
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost:9192/movie-service/api';
-const OSCAR_SERVICE_BASE_URL = process.env.REACT_APP_OSCAR_SERVICE_URL || 'https://localhost:9292/oscar-service/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8081/movie-service/api';
+const OSCAR_SERVICE_BASE_URL = process.env.REACT_APP_OSCAR_SERVICE_URL || 'http://localhost:9391/oscar-service/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,

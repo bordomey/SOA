@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 
 @WebService(endpointInterface = "com.lab2.movie.soap.MovieService", 
             serviceName = "MovieService", 
-            targetNamespace = "http://soap.movie.lab2.com/")
+            targetNamespace = "http://soap.movie.lab2.com/",
+            portName = "MovieServicePort")
 public class MovieServiceImpl implements MovieService {
     private MovieDAO movieDAO = MovieDAO.getInstance();
     
@@ -25,7 +26,7 @@ public class MovieServiceImpl implements MovieService {
     public MovieListResponse getAllMovies(
             int page, int size, List<String> sort,
             String id, String name, String oscarsCount, String goldenPalmCount,
-            String length, String genre, String operatorName, String x, String y) {
+            String length, String genre, String operatorName, String x, String y) throws MovieServiceException {
 
         try {
             List<Movie> allMovies = movieDAO.getAllMovies();
@@ -89,12 +90,12 @@ public class MovieServiceImpl implements MovieService {
 
             return new MovieListResponse(pagedMovies, totalElements, totalPages, page, size);
         } catch (Exception e) {
-            return new MovieListResponse();
+            throw new MovieServiceException("Error retrieving movies: " + e.getMessage(), "MOVIE_RETRIEVAL_ERROR", e);
         }
     }
 
     @Override
-    public Object createMovie(MovieRequest movieRequest) {
+    public Object createMovie(MovieRequest movieRequest) throws MovieServiceException {
         try {
             // Convert MovieRequest to Movie
             Movie movie = movieRequest.toMovie();
@@ -109,13 +110,12 @@ public class MovieServiceImpl implements MovieService {
             Movie createdMovie = movieDAO.createMovie(movie);
             return createdMovie;
         } catch (Exception e) {
-            ErrorResponse error = new ErrorResponse("Internal Server Error", e.getMessage(), java.time.ZonedDateTime.now(), 500);
-            return error;
+            throw new MovieServiceException("Error creating movie: " + e.getMessage(), "MOVIE_CREATION_ERROR", e);
         }
     }
 
     @Override
-    public Object getMovieById(long id) {
+    public Object getMovieById(long id) throws MovieServiceException {
         try {
             if (id <= 0) {
                 ErrorResponse error = new ErrorResponse("Bad Request", "ID must be greater than 0", java.time.ZonedDateTime.now(), 400);
@@ -130,13 +130,12 @@ public class MovieServiceImpl implements MovieService {
 
             return movie;
         } catch (Exception e) {
-            ErrorResponse error = new ErrorResponse("Internal Server Error", e.getMessage(), java.time.ZonedDateTime.now(), 500);
-            return error;
+            throw new MovieServiceException("Error retrieving movie by ID: " + e.getMessage(), "MOVIE_NOT_FOUND", e);
         }
     }
 
     @Override
-    public Object updateMovie(long id, MovieRequest movieRequest) {
+    public Object updateMovie(long id, MovieRequest movieRequest) throws MovieServiceException {
         try {
             if (id <= 0) {
                 ErrorResponse error = new ErrorResponse("Bad Request", "ID must be greater than 0", java.time.ZonedDateTime.now(), 400);
@@ -161,35 +160,32 @@ public class MovieServiceImpl implements MovieService {
 
             return updatedMovie;
         } catch (Exception e) {
-            ErrorResponse error = new ErrorResponse("Internal Server Error", e.getMessage(), java.time.ZonedDateTime.now(), 500);
-            return error;
+            throw new MovieServiceException("Error updating movie: " + e.getMessage(), "MOVIE_UPDATE_ERROR", e);
         }
     }
 
     @Override
-    public boolean deleteMovie(long id) {
+    public boolean deleteMovie(long id) throws MovieServiceException {
         try {
             if (id <= 0) {
-                return false;
+                throw new MovieServiceException("Invalid movie ID: " + id, "INVALID_ID");
             }
 
             return movieDAO.deleteMovie(id);
         } catch (Exception e) {
-            return false;
+            throw new MovieServiceException("Error deleting movie: " + e.getMessage(), "MOVIE_DELETION_ERROR", e);
         }
     }
 
     @Override
-    public OscarUpdateResponse addOscarsToMoviesByLength(int minLength, int oscarsToAdd) {
+    public OscarUpdateResponse addOscarsToMoviesByLength(int minLength, int oscarsToAdd) throws MovieServiceException {
         try {
             if (minLength <= 0) {
-                ErrorResponse error = new ErrorResponse("Bad Request", "Minimum length must be greater than 0", java.time.ZonedDateTime.now(), 400);
-                return new OscarUpdateResponse();
+                throw new MovieServiceException("Minimum length must be greater than 0", "INVALID_LENGTH");
             }
             
             if (oscarsToAdd <= 0) {
-                ErrorResponse error = new ErrorResponse("Bad Request", "Oscars to add must be greater than 0", java.time.ZonedDateTime.now(), 400);
-                return new OscarUpdateResponse();
+                throw new MovieServiceException("Oscars to add must be greater than 0", "INVALID_OSCARS_COUNT");
             }
 
             int moviesAffected = 0;
@@ -213,12 +209,12 @@ public class MovieServiceImpl implements MovieService {
             response.setMessage("Successfully added " + oscarsToAdd + " Oscars to " + moviesAffected + " qualifying movies");
             return response;
         } catch (Exception e) {
-            return new OscarUpdateResponse();
+            throw new MovieServiceException("Error adding Oscars to movies: " + e.getMessage(), "OSCARS_UPDATE_ERROR", e);
         }
     }
 
     @Override
-    public AverageResponse getAverageLength() {
+    public AverageResponse getAverageLength() throws MovieServiceException {
         try {
             List<Movie> movies = movieDAO.getAllMovies();
             if (movies.isEmpty()) {
@@ -232,15 +228,15 @@ public class MovieServiceImpl implements MovieService {
 
             return new AverageResponse(average);
         } catch (Exception e) {
-            return new AverageResponse(0.0);
+            throw new MovieServiceException("Error calculating average length: " + e.getMessage(), "STATISTICS_ERROR", e);
         }
     }
 
     @Override
-    public CountResponse countMoviesByOperator(String operatorName, String operatorBirthday, Long operatorHeight) {
+    public CountResponse countMoviesByOperator(String operatorName, String operatorBirthday, Long operatorHeight) throws MovieServiceException {
         try {
             if (operatorName == null || operatorName.trim().isEmpty()) {
-                return new CountResponse(0);
+                throw new MovieServiceException("Operator name cannot be null or empty", "INVALID_OPERATOR_NAME");
             }
 
             Person operator = new Person();
@@ -261,15 +257,15 @@ public class MovieServiceImpl implements MovieService {
             long count = countMoviesWithGreaterOperator(operator);
             return new CountResponse(count);
         } catch (Exception e) {
-            return new CountResponse(0);
+            throw new MovieServiceException("Error counting movies by operator: " + e.getMessage(), "OPERATOR_COUNT_ERROR", e);
         }
     }
 
     @Override
-    public MovieListResponse filterMoviesByOperator(String operatorName, String operatorBirthday, Long operatorHeight) {
+    public MovieListResponse filterMoviesByOperator(String operatorName, String operatorBirthday, Long operatorHeight) throws MovieServiceException {
         try {
             if (operatorName == null || operatorName.trim().isEmpty()) {
-                return new MovieListResponse();
+                throw new MovieServiceException("Operator name cannot be null or empty", "INVALID_OPERATOR_NAME");
             }
 
             Person operator = new Person();
@@ -290,7 +286,7 @@ public class MovieServiceImpl implements MovieService {
             List<Movie> movies = getMoviesWithGreaterOperator(operator);
             return new MovieListResponse(movies, movies.size(), 1, 0, movies.size());
         } catch (Exception e) {
-            return new MovieListResponse();
+            throw new MovieServiceException("Error filtering movies by operator: " + e.getMessage(), "OPERATOR_FILTER_ERROR", e);
         }
     }
 

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain log-root="${com.sun.aas.instanceRoot}/logs" application-root="${com.sun.aas.instanceRoot}/applications" version="10.0">
+    <security-configurations>
+        <authentication-service default="true" name="adminAuth" />
+        <authorization-service default="true" name="authorizationService" />
+    </security-configurations>
+    <managed-job-configurations>
+        <managed-scheduled-executor-service-configuration/>
+        <managed-thread-factory-configuration/>
+        <managed-executor-service-configuration/>
+    </managed-job-configurations>
+    <system-applications />
+    <resources>
+        <context-service jndi-name="concurrent/__defaultContextService" object-type="system-all" />
+        <managed-executor-service jndi-name="concurrent/__defaultManagedExecutorService" object-type="system-all" />
+        <managed-scheduled-executor-service jndi-name="concurrent/__defaultManagedScheduledExecutorService" object-type="system-all" />
+        <managed-thread-factory jndi-name="concurrent/__defaultManagedThreadFactory" object-type="system-all" />
+    </resources>
+    <servers>
+        <server name="server" config-ref="server-config">
+            <application-ref ref="__admingui" virtual-servers="__asadmin" />
+            <resource-ref ref="concurrent/__defaultContextService" />
+            <resource-ref ref="concurrent/__defaultManagedExecutorService" />
+            <resource-ref ref="concurrent/__defaultManagedScheduledExecutorService" />
+            <resource-ref ref="concurrent/__defaultManagedThreadFactory" />
+        </server>
+    </servers>
+    <nodes />
+    <configs>
+        <config name="server-config">
+            <system-property name="JMS_PROVIDER_PORT" description="Port Number that JMS Service will listen for remote clients connection." value="7676" />
+            <system-property name="ASADMIN_LISTENER_PORT" value="4848" />
+            <http-service>
+                <access-log />
+                <virtual-server id="server" network-listeners="http-listener-1,http-listener-2" />
+                <virtual-server id="__asadmin" network-listeners="admin-listener" />
+            </http-service>
+            <iiop-service>
+                <orb use-thread-pool-ids="thread-pool-1" />
+                <iiop-listener id="orb-listener-1" address="0.0.0.0" port="3700" />
+                <iiop-listener id="SSL" address="0.0.0.0" port="3820">
+                    <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as" />
+                </iiop-listener>
+                <iiop-listener id="SSL_MUTUALAUTH" address="0.0.0.0" port="3920">
+                    <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as" client-auth-enabled="true" />
+                </iiop-listener>
+            </iiop-service>
+            <admin-service system-jmx-connector-name="system" type="das-and-server">
+                <jmx-connector address="0.0.0.0" port="8686" security-enabled="false" auth-realm-name="admin-realm" name="system" />
+                <property name="adminConsoleContextRoot" value="/admin" />
+                <property name="adminConsoleDownloadLocation" value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war" />
+                <property name="ipsRoot" value="${com.sun.aas.installRoot}/.." />
+                <das-config dynamic-reload-enabled="true" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" />
+            </admin-service>
+            <connector-service />
+            <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" />
+            <batch-runtime-configuration />
+            <jms-service default-jms-host="default_JMS_host" type="EMBEDDED">
+                <jms-host host="localhost" name="default_JMS_host" />
+            </jms-service>
+            <web-container>
+                <session-config>
+                    <session-manager>
+                        <manager-properties />
+                        <store-properties />
+                    </session-manager>
+                    <session-properties />
+                </session-config>
+            </web-container>
+            <ejb-container />
+            <mdb-container />
+            <jpa-config />
+            <network-config>
+                <protocols>
+                    <protocol name="http-listener-1">
+                        <http default-virtual-server="server" max-connections="250" http2-enabled="false" />
+                    </protocol>
+                    <protocol security-enabled="true" name="http-listener-2">
+                        <http default-virtual-server="server" max-connections="250" http2-enabled="false" />
+                        <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as" />
+                    </protocol>
+                    <protocol name="admin-listener">
+                        <http max-connections="250" http2-enabled="false" />
+                    </protocol>
+                </protocols>
+                <network-listeners>
+                    <network-listener port="8080" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool" />
+                    <network-listener port="8181" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool" />
+                    <network-listener port="4848" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="http-thread-pool" />
+                </network-listeners>
+                <transports>
+                    <transport name="tcp" />
+                </transports>
+            </network-config>
+            <thread-pools>
+                <thread-pool name="http-thread-pool" max-thread-pool-size="200" />
+                <thread-pool name="thread-pool-1" max-thread-pool-size="200" />
+            </thread-pools>
+            <monitoring-service>
+                <module-monitoring-levels />
+            </monitoring-service>
+            <availability-service />
+        </config>
+    </configs>
+    <property name="administrative.domain.name" value="domain1" />
+    <secure-admin special-admin-indicator="42ed6778-4adb-4045-b1d7-47f0abec9678" />
+    <clusters />
+    <applications />
+</domain>

@@ -13,8 +13,9 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import java.util.List;
 
-@WebService(name = "MovieService", targetNamespace = "http://soap.movie.lab2.com/")
-@SOAPBinding(style = SOAPBinding.Style.RPC)
+@WebService(name = "MovieService", 
+            targetNamespace = "http://soap.movie.lab2.com/")
+@SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL)
 public interface MovieService {
 
     @WebMethod(operationName = "getAllMovies")
@@ -31,45 +32,45 @@ public interface MovieService {
             @WebParam(name = "genre") String genre,
             @WebParam(name = "operatorName") String operatorName,
             @WebParam(name = "x") String x,
-            @WebParam(name = "y") String y);
+            @WebParam(name = "y") String y) throws MovieServiceException;
 
     @WebMethod(operationName = "createMovie")
     @WebResult(name = "movie")
-    Object createMovie(@WebParam(name = "movieRequest") MovieRequest movieRequest);
+    Object createMovie(@WebParam(name = "movieRequest") MovieRequest movieRequest) throws MovieServiceException;
 
     @WebMethod(operationName = "getMovieById")
     @WebResult(name = "movie")
-    Object getMovieById(@WebParam(name = "id") long id);
+    Object getMovieById(@WebParam(name = "id") long id) throws MovieServiceException;
 
     @WebMethod(operationName = "updateMovie")
     @WebResult(name = "movie")
-    Object updateMovie(@WebParam(name = "id") long id, @WebParam(name = "movieRequest") MovieRequest movieRequest);
+    Object updateMovie(@WebParam(name = "id") long id, @WebParam(name = "movieRequest") MovieRequest movieRequest) throws MovieServiceException;
 
     @WebMethod(operationName = "deleteMovie")
     @WebResult(name = "success")
-    boolean deleteMovie(@WebParam(name = "id") long id);
+    boolean deleteMovie(@WebParam(name = "id") long id) throws MovieServiceException;
 
     @WebMethod(operationName = "addOscarsToMoviesByLength")
     @WebResult(name = "oscarUpdateResponse")
     OscarUpdateResponse addOscarsToMoviesByLength(
             @WebParam(name = "minLength") int minLength,
-            @WebParam(name = "oscarsToAdd") int oscarsToAdd);
+            @WebParam(name = "oscarsToAdd") int oscarsToAdd) throws MovieServiceException;
 
     @WebMethod(operationName = "getAverageLength")
     @WebResult(name = "averageResponse")
-    AverageResponse getAverageLength();
+    AverageResponse getAverageLength() throws MovieServiceException;
 
     @WebMethod(operationName = "countMoviesByOperator")
     @WebResult(name = "countResponse")
     CountResponse countMoviesByOperator(
             @WebParam(name = "operatorName") String operatorName,
             @WebParam(name = "operatorBirthday") String operatorBirthday,
-            @WebParam(name = "operatorHeight") Long operatorHeight);
+            @WebParam(name = "operatorHeight") Long operatorHeight) throws MovieServiceException;
 
     @WebMethod(operationName = "filterMoviesByOperator")
     @WebResult(name = "movieListResponse")
     MovieListResponse filterMoviesByOperator(
             @WebParam(name = "operatorName") String operatorName,
             @WebParam(name = "operatorBirthday") String operatorBirthday,
-            @WebParam(name = "operatorHeight") Long operatorHeight);
+            @WebParam(name = "operatorHeight") Long operatorHeight) throws MovieServiceException;
 }

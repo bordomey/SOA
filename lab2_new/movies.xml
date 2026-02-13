@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<movieListResponse>
+  <currentPage>0</currentPage>
+  <movies>
+    <coordinates>
+      <x>10.5</x>
+      <y>25.7</y>
+    </coordinates>
+    <creationDate>2026-02-12T20:09:56Z</creationDate>
+    <genre>ADVENTURE</genre>
+    <goldenPalmCount>1</goldenPalmCount>
+    <id>1</id>
+    <length>175</length>
+    <name>The Godfather</name>
+    <operator>
+      <birthday>1939-04-07T00:00:00Z</birthday>
+      <height>180</height>
+      <name>Francis Ford Cop123pola</name>
+    </operator>
+    <oscarsCount>0</oscarsCount>
+  </movies>
+  <movies>
+    <coordinates>
+      <x>10.5</x>
+      <y>25.7</y>
+    </coordinates>
+    <creationDate>2026-02-12T20:20:14Z</creationDate>
+    <genre>ADVENTURE</genre>
+    <goldenPalmCount>1</goldenPalmCount>
+    <id>2</id>
+    <length>175</length>
+    <name>The Godfather</name>
+    <operator>
+      <birthday>1939-04-07T00:00:00Z</birthday>
+      <height>180</height>
+      <name>Francis Ford Cop123pola</name>
+    </operator>
+    <oscarsCount>0</oscarsCount>
+  </movies>
+  <pageSize>20</pageSize>
+  <totalElements>2</totalElements>
+  <totalPages>1</totalPages>
+</movieListResponse>

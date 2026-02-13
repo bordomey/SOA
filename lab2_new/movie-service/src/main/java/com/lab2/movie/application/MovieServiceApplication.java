@@ -5,7 +5,7 @@ import com.lab2.movie.soap.MovieServiceImpl;
 
 public class MovieServiceApplication {
     public static void main(String[] args) {
-        String url = "http://0.0.0.0:8080/MovieService";
+        String url = "http://0.0.0.0:9090/MovieService";
         if (args.length > 0) {
             url = args[0];
         }

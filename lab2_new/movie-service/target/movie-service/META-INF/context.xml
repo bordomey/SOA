@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- Context configuration for Movie Service SOAP deployment -->
+    <Parameter name="movie-service.context" value="/movie-service" override="false"/>
+    
+    <!-- JAX-WS Configuration -->
+    <Parameter name="com.sun.xml.ws.transport.http.servlet.contextRoot" 
+               value="/movie-service" 
+               override="false"/>
+    
+    <!-- Resource configuration if needed -->
+    <!-- 
+    <Resource name="jdbc/MovieDB" 
+              auth="Container" 
+              type="javax.sql.DataSource"
+              maxTotal="20" 
+              maxIdle="10"
+              maxWaitMillis="-1"
+              username="movie_user" 
+              password="movie_password"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/movie_db"/>
+    -->
+    
+    <!-- Session configuration -->
+    <Manager pathname="" />
+    
+    <!-- JVM arguments for better performance -->
+    <JarScanner scanClassPath="false">
+        <JarScanFilter defaultTldScan="false"/>
+    </JarScanner>
+</Context>

@@ -1,6 +1,7 @@
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\model\MovieGenre.java
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\model\Movie.java
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\model\DateAdapter.java
+C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\application\SoapContextListener.java
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\soap\MovieServiceImpl.java
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\model\ErrorResponse.java
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\model\AverageResponse.java
@@ -13,4 +14,5 @@ C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\soap\MovieServi
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\model\OscarUpdateResponse.java
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\model\Person.java
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\util\ValidationUtil.java
+C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\soap\MovieServiceException.java
 C:\study\SOA\lab2_new\movie-service\src\main\java\com\lab2\movie\model\Coordinates.java

@@ -10,10 +10,10 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://localhost:9192/movie-service/api
-    description: Movie Service HTTPS endpoint
-  - url: https://localhost:9292/oscar-service/api
-    description: Oscar Service HTTPS endpoint
+  - url: http://localhost:9081/movie-service/api
+    description: Movie Service REST-middleware HTTP endpoint
+  - url: http://localhost:9391/oscar-service/api
+    description: Oscar Service HTTP endpoint
 
 
 paths:

@@ -111,7 +111,7 @@ const MovieList = () => {
       }
 
       const response = await movieService.getMovies(params);
-      const data = response.movieListResponse || response;
+      const data =  response;
 
       // Handle different XML response structures
       const rawMovies =

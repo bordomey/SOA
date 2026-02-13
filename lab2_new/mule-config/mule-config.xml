@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core
+        http://www.mulesoft.org/schema/mule/core/3.8/mule.xsd
+        http://www.mulesoft.org/schema/mule/http
+        http://www.mulesoft.org/schema/mule/http/3.8/mule-http.xsd">
+
+    <!-- ===================================================== -->
+    <!-- HTTP LISTENER -->
+    <!-- ===================================================== -->
+    <http:listener-config
+            name="HTTP_Listener_config"
+            host="0.0.0.0"
+            port="8081"/>
+
+    <!-- ===================================================== -->
+    <!-- SOAP BACKEND TARGETS -->
+    <!-- ===================================================== -->
+    <http:request-config
+            name="SOAP_Service_Request_1"
+            host="soap-movie-service-1"
+            port="8080"
+            protocol="HTTP"/>
+
+    <http:request-config
+            name="SOAP_Service_Request_2"
+            host="soap-movie-service-2"
+            port="8080"
+            protocol="HTTP"/>
+
+    <http:request-config
+        name="REST_Backend_1"
+        host="rest-facade-1"
+        port="8080"
+        protocol="HTTP"/>
+    <http:request-config
+        name="REST_Backend_2"
+        host="rest-facade-2"
+        port="8080"
+        protocol="HTTP"/>
+
+
+    <!-- ===================================================== -->
+    <!-- TEST FLOW -->
+    <!-- ===================================================== -->
+    <flow name="test-flow">
+        <http:listener
+                config-ref="HTTP_Listener_config"
+                path="/test"
+                allowedMethods="GET"/>
+        <set-payload value="Hello from Mule ESB!"/>
+    </flow>
+
+    <!-- ===================================================== -->
+    <!-- WSDL PROXY (GET ?wsdl) -->
+    <!-- ===================================================== -->
+    <flow name="movie-service-wsdl">
+        <http:listener
+                config-ref="HTTP_Listener_config"
+                path="/MovieService"
+                allowedMethods="GET"/>
+
+        <choice>
+            <when expression="#[message.inboundProperties.'http.query.string' == 'wsdl']">
+                <http:request
+                        config-ref="SOAP_Service_Request_1"
+                        path="/MovieService?wsdl"
+                        method="GET"/>
+            </when>
+            <otherwise>
+                <set-payload value="WSDL only"/>
+                <set-property propertyName="http.status" value="404"/>
+            </otherwise>
+        </choice>
+    </flow>
+
+    <!-- ===================================================== -->
+    <!-- SOAP PROXY (POST) -->
+    <!-- ===================================================== -->
+    <flow name="movie-service-soap">
+        <http:listener
+                config-ref="HTTP_Listener_config"
+                path="/MovieService"
+                allowedMethods="POST"/>
+
+        <!-- КРИТИЧНО: сохраняем SOAP XML -->
+        <byte-array-to-string-transformer/>
+
+
+        <choice>
+            <when expression="#[message.inboundProperties.'http.query.params'.instance == '2']">
+                <http:request
+                        config-ref="SOAP_Service_Request_2"
+                        path="/MovieService"
+                        method="POST">
+                    <http:request-builder>
+                        <http:header headerName="Content-Type"
+                                     value="text/xml; charset=utf-8"/>
+                        <http:header headerName="SOAPAction"
+                                     value="#[message.inboundProperties.'SOAPAction']"/>
+                    </http:request-builder>
+                </http:request>
+            </when>
+            <otherwise>
+                <http:request
+                        config-ref="SOAP_Service_Request_1"
+                        path="/MovieService"
+                        method="POST">
+                    <http:request-builder>
+                        <http:header headerName="Content-Type"
+                                     value="text/xml; charset=utf-8"/>
+                        <http:header headerName="SOAPAction"
+                                     value="#[message.inboundProperties.'SOAPAction']"/>
+                    </http:request-builder>
+                </http:request>
+            </otherwise>
+        </choice>
+    </flow>
+
+    <flow name="rest-proxy-flow">
+
+    <http:listener
+            config-ref="HTTP_Listener_config"
+            path="/movie-service/api/*"
+            allowedMethods="GET,POST,PUT,DELETE,OPTIONS"/>
+
+    <!-- сохраняем полный URI с параметрами запроса -->
+    <set-variable
+            variableName="fullUri"
+            value="#[message.inboundProperties.'http.request.uri']"/>
+
+    <choice>
+        <when expression="#[message.inboundProperties.'http.query.params'.instance == '2']">
+            <http:request
+                    config-ref="REST_Backend_2"
+                    path="#[flowVars.fullUri]"
+                    method="#[message.inboundProperties.'http.method']">
+                <http:request-builder>
+                    <http:header headerName="Content-Type"
+                                 value="#[message.inboundProperties.'Content-Type']"/>
+                </http:request-builder>
+            </http:request>
+        </when>
+
+        <otherwise>
+            <http:request
+                    config-ref="REST_Backend_1"
+                    path="#[flowVars.fullUri]"
+                    method="#[message.inboundProperties.'http.method']">
+                <http:request-builder>
+                    <http:header headerName="Content-Type"
+                                 value="#[message.inboundProperties.'Content-Type']"/>
+                </http:request-builder>
+            </http:request>
+        </otherwise>
+    </choice>
+    <set-property propertyName="Access-Control-Allow-Origin" value="*"/>
+    <set-property propertyName="Access-Control-Allow-Methods" value="GET,POST,PUT,DELETE,OPTIONS"/>
+    <set-property propertyName="Access-Control-Allow-Headers" value="Content-Type, Authorization"/>
+
+</flow>
+
+
+
+    <!-- ===================================================== -->
+    <!-- HEALTH CHECK -->
+    <!-- ===================================================== -->
+    <flow name="health-check">
+        <http:listener
+                config-ref="HTTP_Listener_config"
+                path="/health"
+                allowedMethods="GET"/>
+        <set-payload value='{"status":"UP","service":"Mule ESB"}'/>
+        <set-property propertyName="Content-Type"
+                      value="application/json"/>
+    </flow>
+
+</mule>
