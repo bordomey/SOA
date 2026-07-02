@@ -9,74 +9,6 @@ This repository contains the implementation for Lab 3 of the SOA course, which f
 - Docker and Docker Compose
 - Payara Micro (for manual deployment)
 
-## Project Structure
-
-```
-├── movie-service/           # Called service (Spring Boot)
-│   ├── src/                 # Source code
-│   ├── Dockerfile           # Docker configuration
-│   └── target/              # Compiled artifacts
-├── oscar-service/           # Calling service (EJB-based)
-│   ├── oscar-web/          # Web module (JAX-RS resources)
-│   ├── oscar-ejb/          # EJB module (business logic)
-│   ├── Dockerfile           # Docker configuration
-│   └── target/              # Compiled artifacts
-├── haproxy/                # HAProxy configuration
-├── docker-compose.yml       # Docker Compose orchestration
-├── build-and-deploy.sh     # Build and deployment script (Linux/Mac)
-└── build-and-deploy.bat    # Build and deployment script (Windows)
-```
-
-## Running the Services
-
-### Option 1: Docker Deployment (Recommended)
-
-```bash
-# Build and deploy all services
-./build-and-deploy.sh  # Linux/Mac
-# OR
-build-and-deploy.bat   # Windows
-```
-
-> **Troubleshooting Tip**: If you encounter `ClassNotFoundException` errors (like `java.lang.ClassNotFoundException: com.lab2.oscar.ejb.OscarServiceRemote`), check [FIXES_SUMMARY.md](FIXES_SUMMARY.md) for detailed solutions.
-
-### Option 2: Manual Deployment
-
-#### 1. Start Consul for Service Discovery
-
-```bash
-consul agent -dev
-```
-
-#### 2. Start HAProxy
-
-```bash
-haproxy -f haproxy/haproxy.cfg
-```
-
-#### 3. Start Movie Service Instances
-
-##### Windows:
-```cmd
-start-movie-instances.bat
-```
-
-##### Linux/Mac:
-```bash
-./start-movie-instances.sh
-```
-
-#### 4. Start Oscar Service Instances
-
-##### Windows:
-```cmd
-start-oscar-instances.bat
-```
-
-##### Linux/Mac:
-```bash
-./start-oscar-instances.sh
-```
 
 ## Access Points
 
@@ -85,21 +17,25 @@ start-oscar-instances.bat
 - HAProxy Stats: http://localhost:8404
 - Consul UI: http://localhost:8500
 
-## Key Features Implemented
+## Lab 3 requirements
 
-1. **Spring Boot Migration**: The movie-service has been migrated from Payara/JAX-RS to Spring Boot
-2. **Service Discovery**: Both services register with Consul for automatic service discovery
-3. **Load Balancing**: HAProxy distributes requests across multiple service instances
-4. **EJB Architecture**: The oscar-service has been restructured into separate web and EJB modules
-5. **Dynamic Scaling**: EJB pools are configured for dynamic resizing based on load
-6. **Multiple Instances**: Scripts are provided to easily start multiple instances of each service
-7. **Docker Deployment**: Full Docker and Docker Compose support for easy deployment
-8. **Service Communication**: Well-defined communication patterns between services
+Изменения в "вызываемом" сервисе:
+
+    Сконфигурировать окружение для работы сервиса на платформе Spring Boot.
+    Запустить второй экземпляр сервиса на другом порту. Реализовать балансировку нагрузки между экземплярами с помощью Haproxy.
+    Реализовать механизм Service Discovery. Для этого установить Consul и интегрировать свой сервис с ним, автоматически регистрируя в момент запуска.
+
+Изменения в "вызывающем" сервисе:
+
+    Разделить приложение на два модуля -- веб-приложение с веб-сервисом и EJB-jar с бизнес-компонентами.
+    Переместить всю логику из класса сервиса в Stateless EJB. В классе сервиса оставить только обращение к методам бизнес-интерфейса. EJB-компонент должен быть доступен удалённо (иметь Remote-интерфейс).
+    Сформировать на уровне сервера приложений пул компонентов EJB настраиваемой мощности, динамически расширяемый при увеличении нагрузки.
+    Настроить второй экземпляр сервера приложений на другом порту, "поднять" на нём вторую копию веб-сервиса и пула EJB.
+    Настроить балансировку нагрузки на оба запущенных узла через Haproxy.
+
+Оба веб-сервиса и клиентское приложение должны сохранить полную совместимость с API, реализованными в рамках предыдущих лабораторных работ.
 
 ## API Endpoints
-
-The services maintain full compatibility with the APIs from previous labs:
-
 ### Movie Service
 - `GET /api/movies` - Get all movies with filtering and pagination
 - `POST /api/movies` - Create a new movie
@@ -114,18 +50,3 @@ The services maintain full compatibility with the APIs from previous labs:
 ### Oscar Service
 - `GET /api/oscar/screenwriters/get-loosers` - Get screenwriters with no Oscar wins
 - `PATCH /api/oscar/movies/honor-by-length/{min-length}/oscars-to-add` - Add Oscars to movies
-
-All endpoints support both XML and JSON formats.
-
-## Additional Documentation
-
-- [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md) - Detailed instructions for Docker deployment
-- [SERVICE_COMMUNICATION.md](SERVICE_COMMUNICATION.md) - Explanation of how services communicate in the Docker environment
-- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Technical summary of all changes made for Lab 3
-- [FIXES_SUMMARY.md](FIXES_SUMMARY.md) - Summary of fixes for Docker deployment issues
-- [CHANGES_SUMMARY.md](CHANGES_SUMMARY.md) - Complete summary of all changes made
-
-## Test Scripts
-
-- [test-deployment.sh](test-deployment.sh) - Shell script to verify deployment (Linux/Mac)
-- [test-deployment.bat](test-deployment.bat) - Batch script to verify deployment (Windows)
